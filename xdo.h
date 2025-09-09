@@ -36,6 +36,7 @@ int default_screen;
 xcb_window_t root;
 xcb_ewmh_connection_t *ewmh;
 config_t cfg;
+bool using_std;
 bool running;
 
 void apply(void (*action)(xcb_window_t), xcb_window_t parent, xcb_window_t win, uint32_t desktop, char* class, int* hits);

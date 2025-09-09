@@ -15,11 +15,38 @@
 
 int main(int argc, char *argv[])
 {
+	void (*action) (xcb_window_t win);
 	if (argc < 2) {
-		err("No arguments given.\n");
+		using_std = true;
 	}
 
-	void (*action) (xcb_window_t win);
+	setup();
+
+	start:
+	if (using_std) {
+		char b[MAXLEN] = {0};
+		int r = read(STDIN_FILENO,b,MAXLEN-1);
+		if (r == 0){
+			using_std = false;
+			goto end;
+		}
+
+		char *std_args[10] = {0};
+		std_args[0] = argv[0];
+		argv = std_args;
+
+		int i = 1;
+		while (true) {
+			if (i >= 10)
+				err("too many arguments\n");
+			
+			argv[i++] = strtok(i > 1 ? NULL:b, " ");	
+			if (argv[i-1] == NULL) 
+				break;
+		}
+		
+		argc = --i;
+	}
 
 	if (strcmp(argv[1], "id") == 0) {
 		action = window_id;
@@ -127,8 +154,6 @@ int main(int argc, char *argv[])
 	int num = argc - optind;
 	char **args = argv + optind;
 
-	setup();
-
 	struct sigaction sa;
 	sa.sa_handler = &handle_signal;
 	sa.sa_flags = SA_RESTART;
@@ -204,6 +229,9 @@ int main(int argc, char *argv[])
 	}
 
 end:
+	if (using_std)
+		goto start;
+
 	finish();
 	if (hits > 0) {
 		return EXIT_SUCCESS;
