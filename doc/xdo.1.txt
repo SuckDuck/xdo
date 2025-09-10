@@ -22,6 +22,8 @@ Apply the given action to the given windows.
 
 If no window IDs and no options are given, the action applies to the focused window.
 
+If xdo is invoked with no arguments, it reads commands from standard input, one per line.
+
 Actions
 -------
 
@@ -168,6 +170,12 @@ Send fake key press/release events with keycode 46 to the focused window:
 
 ----
 xdo key_press -k 46; sleep 0.2; xdo key_release -k 46
+----
+
+Move the pointer to coordinates (0,0) using stdin:
+
+----
+echo -n "pointer_motion -x 0 -y 0" | xdo
 ----
 
 ////
